@@ -8,11 +8,11 @@ namespace Carglass.TechnicalAssessment.Backend.BL;
 
 internal class ClientAppService : IClientAppService
 {
-    private readonly ClientIMRepository clientIMRepository;
+    private readonly ICrudRepository<Client> clientIMRepository;
     private readonly IMapper mapper;
     private readonly IValidator<ClientDto> clientValidator;
 
-    public ClientAppService(ClientIMRepository clientIMRepository, IMapper mapper, IValidator<ClientDto> clientValidator)
+    public ClientAppService(ICrudRepository<Client> clientIMRepository, IMapper mapper, IValidator<ClientDto> clientValidator)
     { 
         this.clientIMRepository = clientIMRepository;
         this.mapper = mapper;
@@ -39,6 +39,9 @@ internal class ClientAppService : IClientAppService
         }
 
         var clientEntity = mapper.Map<Client>(client);
+
+        ValidateDto(client);
+        
         clientIMRepository.Create(clientEntity);
     }
 
