@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carglass.TechnicalAssessment.Backend.BL", "Carglass.TechnicalAssessment.Backend.BL\Carglass.TechnicalAssessment.Backend.BL.csproj", "{D1477001-F901-44D2-A443-B4A1B9151489}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carglass.TechnicalAssessment.Backend.DL", "Carglass.TechnicalAssessment.Backend.DL\Carglass.TechnicalAssessment.Backend.DL.csproj", "{FE18790F-6FBE-46E4-901B-ED1E965B66C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carglass.TechnicalAssessment.Backend.Api", "Carglass.TechnicalAssessment.Backend.Api\Carglass.TechnicalAssessment.Backend.Api.csproj", "{F22D49EB-3E97-4140-88B2-32AA7FAB8012}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carglass.TechnicalAssessment.Backend.Dtos", "Carglass.TechnicalAssessment.Backend.Dtos\Carglass.TechnicalAssessment.Backend.Dtos.csproj", "{23371933-171C-486D-A570-F46C7F619FAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carglass.TechnicalAssessment.Backend.Entities", "Carglass.TechnicalAssessment.Backend.Entities\Carglass.TechnicalAssessment.Backend.Entities.csproj", "{6744C5CB-3732-4241-9014-3AE131AE544D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1477001-F901-44D2-A443-B4A1B9151489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1477001-F901-44D2-A443-B4A1B9151489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1477001-F901-44D2-A443-B4A1B9151489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1477001-F901-44D2-A443-B4A1B9151489}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE18790F-6FBE-46E4-901B-ED1E965B66C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE18790F-6FBE-46E4-901B-ED1E965B66C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE18790F-6FBE-46E4-901B-ED1E965B66C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE18790F-6FBE-46E4-901B-ED1E965B66C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F22D49EB-3E97-4140-88B2-32AA7FAB8012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F22D49EB-3E97-4140-88B2-32AA7FAB8012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F22D49EB-3E97-4140-88B2-32AA7FAB8012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F22D49EB-3E97-4140-88B2-32AA7FAB8012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23371933-171C-486D-A570-F46C7F619FAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23371933-171C-486D-A570-F46C7F619FAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23371933-171C-486D-A570-F46C7F619FAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23371933-171C-486D-A570-F46C7F619FAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6744C5CB-3732-4241-9014-3AE131AE544D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6744C5CB-3732-4241-9014-3AE131AE544D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6744C5CB-3732-4241-9014-3AE131AE544D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6744C5CB-3732-4241-9014-3AE131AE544D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {23D9295B-8EF1-4252-B177-A6170692C519}
+	EndGlobalSection
+EndGlobal
