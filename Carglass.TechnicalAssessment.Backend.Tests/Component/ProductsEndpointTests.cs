@@ -1,0 +1,125 @@
+﻿using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Carglass.TechnicalAssessment.Backend.Tests.Component;
+
+public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private const string SoldAt = "2019-01-09 14:26:17";
+
+    private readonly HttpClient _client;
+
+    public ProductsEndpointsTests(WebApplicationFactory<Program> factory)
+        => _client = factory.CreateClient();
+
+    private static object NewProduct(int id, string? productName = "Cristal ventanilla delantera") => new
+    {
+        id,
+        productName,
+        productType = 25,
+        numTerminal = 933933933,
+        soldAt = SoldAt
+    };
+
+    private async Task<JsonElement> GetProductJson(int id)
+    {
+        var response = await _client.GetAsync($"/products/{id}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    [Fact]
+    public async Task GetById_seed_product_matches_contract()
+    {
+        var json = await GetProductJson(1111111);
+
+        Assert.Equal(1111111, json.GetProperty("id").GetInt32());
+        Assert.Equal("Cristal ventanilla delantera", json.GetProperty("productName").GetString());
+        Assert.Equal(25, json.GetProperty("productType").GetInt32());
+        Assert.Equal(933933933, json.GetProperty("numTerminal").GetInt32());
+        Assert.Equal(SoldAt, json.GetProperty("soldAt").GetString());
+    }
+
+    [Fact]
+    public async Task Create_then_GetById_returns_created_product()
+    {
+        var response = await _client.PostAsJsonAsync("/products", NewProduct(2001));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var json = await GetProductJson(2001);
+        Assert.Equal("Cristal ventanilla delantera", json.GetProperty("productName").GetString());
+        Assert.Equal(SoldAt, json.GetProperty("soldAt").GetString());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public async Task Create_without_product_name_returns_400(string? productName)
+    {
+        var response = await _client.PostAsJsonAsync("/products", NewProduct(2002, productName));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Contains("ProductName", problem!.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Create_with_id_zero_returns_400()
+    {
+        var response = await _client.PostAsJsonAsync("/products", NewProduct(0));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Contains("Id", problem!.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Create_duplicated_id_returns_409()
+    {
+        var response = await _client.PostAsJsonAsync("/products", NewProduct(1111111));
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetById_nonexistent_returns_404()
+    {
+        var response = await _client.GetAsync("/products/999999");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Update_then_GetById_returns_updated()
+    {
+        (await _client.PostAsJsonAsync("/products", NewProduct(2003))).EnsureSuccessStatusCode();
+
+        var response = await _client.PutAsJsonAsync("/products", NewProduct(2003, "Luna trasera"));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var json = await GetProductJson(2003);
+        Assert.Equal("Luna trasera", json.GetProperty("productName").GetString());
+    }
+
+    [Fact]
+    public async Task Delete_then_GetById_returns_404()
+    {
+        var product = NewProduct(2004);
+        (await _client.PostAsJsonAsync("/products", product)).EnsureSuccessStatusCode();
+
+        var request = new HttpRequestMessage(HttpMethod.Delete, "/products")
+        {
+            Content = JsonContent.Create(product)
+        };
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await _client.GetAsync("/products/2004")).StatusCode);
+    }
+}
