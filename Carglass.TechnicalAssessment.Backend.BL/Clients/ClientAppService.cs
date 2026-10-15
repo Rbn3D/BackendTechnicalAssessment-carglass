@@ -8,75 +8,65 @@ namespace Carglass.TechnicalAssessment.Backend.BL;
 
 internal class ClientAppService : IClientAppService
 {
-    private readonly ICrudRepository<Client> clientIMRepository;
-    private readonly IMapper mapper;
-    private readonly IValidator<ClientDto> clientValidator;
+    private readonly ICrudRepository<Client> _clientRepository;
+    private readonly IMapper _mapper;
+    private readonly IValidator<ClientDto> _clientValidator;
 
     public ClientAppService(ICrudRepository<Client> clientIMRepository, IMapper mapper, IValidator<ClientDto> clientValidator)
     { 
-        this.clientIMRepository = clientIMRepository;
-        this.mapper = mapper;
-        this.clientValidator = clientValidator;
+        this._clientRepository = clientIMRepository;
+        this._mapper = mapper;
+        this._clientValidator = clientValidator;
     }
 
     public IEnumerable<ClientDto> GetAll()
     {
-        var moneySpenders = clientIMRepository.GetAll();
-        return mapper.Map<IEnumerable<ClientDto>>(moneySpenders);
+        var clients = _clientRepository.GetAll();
+        return _mapper.Map<IEnumerable<ClientDto>>(clients);
     }
 
     public ClientDto GetById(params object[] id)
     {
-        var client = clientIMRepository.GetById(id);
-        return mapper.Map<ClientDto>(client);
+        var client = _clientRepository.GetById(id)
+                     ?? throw new NotFoundException("cliente", id[0]);
+        return _mapper.Map<ClientDto>(client);
     }
 
     public void Create(ClientDto client)
     {
-        if (null != clientIMRepository.GetById(client.Id))
-        {
-            throw new Exception("Ya existe un cliente con este Id");
-        }
+        _clientValidator.ValidateAndThrow(client);
 
-        var clientEntity = mapper.Map<Client>(client);
+        if (_clientRepository.GetById(client.Id) is not null)
+            throw new ConflictException($"Ya existe un cliente con Id '{client.Id}'.");
 
-        ValidateDto(client);
-        
-        clientIMRepository.Create(clientEntity);
+        if (_clientRepository.GetAll().Any(c => c.DocNum == client.DocNum))
+            throw new ConflictException("Ya existe un cliente con ese número de documento.");
+
+        _clientRepository.Create(_mapper.Map<Client>(client));
     }
 
     public void Update(ClientDto client)
     {
-        if (null == clientIMRepository.GetById(client.Id))
+        if (null == _clientRepository.GetById(client.Id))
         {
-            throw new Exception("No existe ningún cliente con este Id");
+            throw new NotFoundException("cliente", client.Id);
         }
 
-        ValidateDto(client);
+        _clientValidator.ValidateAndThrow(client);
 
-        var clientEntity = mapper.Map<Client>(client);
-        clientIMRepository.Update(clientEntity);
+        var clientEntity = _mapper.Map<Client>(client);
+        _clientRepository.Update(clientEntity);
     }
 
     public void Delete(ClientDto client)
     {
-        var clientEntity = clientIMRepository.GetById(client.Id);
+        var clientEntity = _clientRepository.GetById(client.Id);
 
         if (clientEntity is null)
         {
-            throw new Exception("No existe un cliente con este Id");
+            throw new NotFoundException("cliente", client.Id);
         }
 
-        clientIMRepository.Delete(clientEntity);
-    }
-
-    private void ValidateDto(ClientDto item)
-    {
-        var validationResult = clientValidator.Validate(item);
-        if (validationResult.Errors.Any())
-        {
-            string toShowErrors = string.Join("; ", validationResult.Errors.Select(s => s.ErrorMessage));
-            throw new Exception($"El cliente especificado no cumple los requisitos de validación. Errores: '{toShowErrors}'");
-        }
+        _clientRepository.Delete(clientEntity);
     }
 }
