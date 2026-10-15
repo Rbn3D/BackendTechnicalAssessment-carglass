@@ -60,8 +60,8 @@ public sealed class ExceptionHandlingMiddleware
 
         problem.Instance = context.Request.Path;
         context.Response.StatusCode = problem.Status!.Value;
-        await context.Response.WriteAsJsonAsync(problem, (JsonSerializerOptions?)null,
-            "application/problem+json");
+                await context.Response.WriteAsJsonAsync(problem, problem.GetType(),
+            (JsonSerializerOptions?)null, "application/problem+json");
     }
 
     private static ProblemDetails CreateProblem(int status, string detail) =>

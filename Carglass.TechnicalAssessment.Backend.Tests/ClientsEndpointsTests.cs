@@ -1,4 +1,5 @@
 using Carglass.TechnicalAssessment.Backend.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -52,4 +53,111 @@ public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>
         Assert.Equal("Romani", client.FamilyName1);
         Assert.Equal("668668668", client.Phone);
     }
+
+    [Fact]
+    public async Task GetById_nonexistent_returns_404()
+    {
+        var response = await _client.GetAsync("/clients/999999");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.Equal(404, problem!.Status);
+    }
+
+    [Fact]
+    public async Task Create_duplicated_id_returns_409()
+    {
+        var dto = NewClient(id: 1, docNum: "33333333P");
+
+        var response = await _client.PostAsJsonAsync("/clients", dto);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+
+        var stored = await _client.GetFromJsonAsync<ClientDto>("/clients/1");
+        Assert.Equal("11223344E", stored!.DocNum); // Must return the original client, not the new one
+    }
+
+    [Fact]
+    public async Task Create_duplicated_docnum_returns_409()
+    {
+        var dto = NewClient(id: 200, docNum: "11223344E");
+
+        var response = await _client.PostAsJsonAsync("/clients", dto);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+
+        var check = await _client.GetAsync("/clients/200");
+        Assert.Equal(HttpStatusCode.NotFound, check.StatusCode); // Must return 404 (not created due to conflict)
+    }
+
+    // Nifs invalidos
+    [Theory]
+    [InlineData("1234567Z")]    // 7 dígitos
+    [InlineData("123456789")]   // sin letra
+    [InlineData("ABCDEFGHZ")]   // letras en vez de dígitos
+    [InlineData("12345678ZZ")]  // sobra una letra
+    public async Task Create_invalid_nif_returns_400(string docNum)
+    {
+        var dto = NewClient(id: 300, docNum: docNum);
+
+        var response = await _client.PostAsJsonAsync("/clients", dto);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Contains("DocNum", problem!.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Update_then_GetById_returns_updated()
+    {
+        var original = NewClient(id: 400, docNum: "11111111H");
+        (await _client.PostAsJsonAsync("/clients", original)).EnsureSuccessStatusCode();
+
+        var updated = NewClient(id: 400, docNum: "11111111H");
+        updated.Email = "updated@sample.com";
+        updated.Phone = "699999999";
+
+        var response = await _client.PutAsJsonAsync("/clients", updated);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var stored = await _client.GetFromJsonAsync<ClientDto>("/clients/400");
+
+        // Verify that the stored client has the updated values
+        Assert.Equal("updated@sample.com", stored!.Email);
+        Assert.Equal("699999999", stored.Phone);
+        Assert.Equal("11111111H", stored.DocNum);
+    }
+
+    [Fact]
+    public async Task Delete_then_GetById_returns_404()
+    {
+        var dto = NewClient(id: 500, docNum: "22222222J");
+        (await _client.PostAsJsonAsync("/clients", dto)).EnsureSuccessStatusCode();
+
+        var request = new HttpRequestMessage(HttpMethod.Delete, "/clients")
+        {
+            Content = JsonContent.Create(dto)
+        };
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var check = await _client.GetAsync("/clients/500");
+        Assert.Equal(HttpStatusCode.NotFound, check.StatusCode);
+    }
+
+    private static ClientDto NewClient(int id, string docNum) => new()
+    {
+        Id = id,
+        DocType = "nif",
+        DocNum = docNum,
+        Email = $"client{id}@sample.com",
+        GivenName = "Test",
+        FamilyName1 = "User",
+        Phone = "600000000"
+    };
 }
