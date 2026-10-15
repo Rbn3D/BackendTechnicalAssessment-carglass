@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http.Json;
 
-namespace Carglass.TechnicalAssessment.Backend.Tests;
+namespace Carglass.TechnicalAssessment.Backend.Tests.Component;
 
 public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>>
 {

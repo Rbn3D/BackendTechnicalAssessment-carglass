@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Carglass.TechnicalAssessment.Backend.Dtos\Carglass.TechnicalAssessment.Backend.Dtos.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="Carglass.TechnicalAssessment.Backend.Tests" />
+  </ItemGroup>
+
 </Project>
