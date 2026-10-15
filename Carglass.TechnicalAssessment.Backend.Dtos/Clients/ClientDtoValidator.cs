@@ -1,9 +1,13 @@
 ﻿using FluentValidation;
+using System.Text.RegularExpressions;
 
 namespace Carglass.TechnicalAssessment.Backend.Dtos;
 
 public class ClientDtoValidator : AbstractValidator<ClientDto>
 {
+    private const string NifDocType = "nif";
+    private static readonly Regex NifRegex = new(@"^[0-9]{8}[A-Za-z]$", RegexOptions.Compiled); // Regex compiled for performance
+
     public ClientDtoValidator()
     {
         RuleFor(x => x.Id)
@@ -28,6 +32,9 @@ public class ClientDtoValidator : AbstractValidator<ClientDto>
             .EmailAddress()
             .WithMessage("El email no cumple el formato adecuado.");
 
-        // ... More validations (It is not necessary to create them)
+        RuleFor(x => x.DocNum)
+            .Matches(NifRegex)
+            .WithMessage("El NIF debe tener 8 dígitos seguidos de 1 letra.")
+            .When(x => string.Equals(x.DocType, NifDocType, StringComparison.OrdinalIgnoreCase));
     }
 }
