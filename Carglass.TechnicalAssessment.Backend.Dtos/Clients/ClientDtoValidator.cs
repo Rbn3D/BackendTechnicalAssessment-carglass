@@ -6,13 +6,13 @@ namespace Carglass.TechnicalAssessment.Backend.Dtos;
 public class ClientDtoValidator : AbstractValidator<ClientDto>
 {
     private const string NifDocType = "nif";
-    private static readonly Regex NifRegex = new(@"^[0-9]{8}[A-Za-z]$", RegexOptions.Compiled); // Regex compiled for performance
+    private static readonly Regex NifRegex = new(@"^[0-9]{8}[A-Za-z]\z", RegexOptions.Compiled); // Regex compiled for performance
 
     public ClientDtoValidator()
     {
         RuleFor(x => x.Id)
             .NotEqual(default(int))
-            .WithMessage("El Id del producto es necesario.");
+            .WithMessage("El Id del cliente es necesario.");
 
         RuleFor(x => x.DocType)
             .NotEmpty()
