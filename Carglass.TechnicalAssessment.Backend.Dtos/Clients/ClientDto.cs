@@ -1,6 +1,6 @@
 ﻿namespace Carglass.TechnicalAssessment.Backend.Dtos;
 
-public class ClientDto
+public class ClientDto : IDto
 {
     public int Id { get; set; }
     public string DocType { get; set; }
