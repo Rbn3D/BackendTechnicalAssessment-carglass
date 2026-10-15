@@ -12,9 +12,9 @@ internal class ClientAppService : IClientAppService
     private readonly IMapper _mapper;
     private readonly IValidator<ClientDto> _clientValidator;
 
-    public ClientAppService(ICrudRepository<Client> clientIMRepository, IMapper mapper, IValidator<ClientDto> clientValidator)
+    public ClientAppService(ICrudRepository<Client> clientRepository, IMapper mapper, IValidator<ClientDto> clientValidator)
     { 
-        this._clientRepository = clientIMRepository;
+        this._clientRepository = clientRepository;
         this._mapper = mapper;
         this._clientValidator = clientValidator;
     }
