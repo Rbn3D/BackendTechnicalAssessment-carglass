@@ -146,14 +146,16 @@ public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>
     [Fact]
     public async Task Update_then_GetById_returns_updated()
     {
-        var original = NewClient(id: 400, docNum: "11111111H");
-        (await _client.PostAsJsonAsync("/clients", original)).EnsureSuccessStatusCode();
+        var original = NewClient(id: 400, docNum: "11111112H");
+        var response = await _client.PostAsJsonAsync("/clients", original);
 
-        var updated = NewClient(id: 400, docNum: "11111111H");
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        var updated = NewClient(id: 400, docNum: "11111112H");
         updated.Email = "updated@sample.com";
         updated.Phone = "699999999";
 
-        var response = await _client.PutAsJsonAsync("/clients", updated);
+        response = await _client.PutAsJsonAsync("/clients", updated);
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
@@ -162,7 +164,7 @@ public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>
         // Verify that the stored client has the updated values
         Assert.Equal("updated@sample.com", stored!.Email);
         Assert.Equal("699999999", stored.Phone);
-        Assert.Equal("11111111H", stored.DocNum);
+        Assert.Equal("11111112H", stored.DocNum);
     }
 
     [Fact]
