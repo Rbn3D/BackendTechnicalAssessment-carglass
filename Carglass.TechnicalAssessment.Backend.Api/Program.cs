@@ -28,6 +28,8 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 
 var app = builder.Build();
 
+// Request Logging Middleware
+app.UseMiddleware<RequestLoggingMiddleware>();
 // Exception Middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

@@ -5,6 +5,7 @@ using Carglass.TechnicalAssessment.Backend.DL.Repositories;
 using Carglass.TechnicalAssessment.Backend.Dtos;
 using Carglass.TechnicalAssessment.Backend.Entities;
 using FluentValidation;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 namespace Carglass.TechnicalAssessment.Backend.Tests.Unit.BL;
@@ -19,7 +20,7 @@ public class ClientAppServiceTests
         var mapper = new MapperConfiguration(cfg => cfg.AddProfile<ClientProfileConverter>())
             .CreateMapper();
 
-        _service = new ClientAppService(_repository.Object, mapper, new ClientDtoValidator());
+        _service = new ClientAppService(_repository.Object, mapper, new ClientDtoValidator(), NullLogger<ClientAppService>.Instance);
     }
 
     private static ClientDto ValidDto(int id = 10, string docNum = "12345678Z") => new()
