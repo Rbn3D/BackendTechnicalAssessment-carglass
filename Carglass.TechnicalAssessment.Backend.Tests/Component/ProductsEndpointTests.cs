@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Carglass.TechnicalAssessment.Backend.Tests.Component;
 
-public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
+public class ProductsEndpointTests : IClassFixture<ApiFactory>
 {
+    public ProductsEndpointTests(ApiFactory factory)
+         => _client = factory.CreateAuthenticatedClient();
+
     private const string SoldAt = "2019-01-09 14:26:17";
 
     private readonly HttpClient _client;
-
-    public ProductsEndpointsTests(WebApplicationFactory<Program> factory)
-        => _client = factory.CreateClient();
 
     private static object NewProduct(int id, string? productName = "Cristal ventanilla delantera") => new
     {

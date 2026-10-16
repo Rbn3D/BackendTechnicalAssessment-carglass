@@ -5,8 +5,10 @@ using System.Net.Http.Json;
 
 namespace Carglass.TechnicalAssessment.Backend.Tests.Component;
 
-public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+public class ClientsEndpointTests : IClassFixture<ApiFactory>
 {
+   public ClientsEndpointTests(ApiFactory factory)
+        => _client = factory.CreateAuthenticatedClient();
     private readonly HttpClient _client;
 
     public ClientsEndpointTests(WebApplicationFactory<Program> factory)
