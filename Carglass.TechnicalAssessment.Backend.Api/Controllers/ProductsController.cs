@@ -31,33 +31,33 @@ public class ProductsController : ControllerBase
 
     /// <summary>Crea un producto.</summary>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public IActionResult Create([FromBody] ProductDto dto)
     {
         _productAppService.Create(dto);
-        return Ok();
+        return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
 
     /// <summary>Actualiza un producto existente.</summary>
     [HttpPut]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public IActionResult Update([FromBody] ProductDto dto)
     {
         _productAppService.Update(dto);
-        return Ok();
+        return NoContent();
     }
 
     /// <summary>Elimina un producto.</summary>
     [HttpDelete]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public IActionResult Delete([FromBody] ProductDto dto)
     {
         _productAppService.Delete(dto);
-        return Ok();
+        return NoContent();
     }
 }

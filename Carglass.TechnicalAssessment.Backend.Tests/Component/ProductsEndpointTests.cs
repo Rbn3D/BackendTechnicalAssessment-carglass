@@ -47,7 +47,7 @@ public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Progra
     {
         var response = await _client.PostAsJsonAsync("/products", NewProduct(2001));
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var json = await GetProductJson(2001);
         Assert.Equal("Cristal ventanilla delantera", json.GetProperty("productName").GetString());
@@ -102,7 +102,7 @@ public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Progra
 
         var response = await _client.PutAsJsonAsync("/products", NewProduct(2003, "Luna trasera"));
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         var json = await GetProductJson(2003);
         Assert.Equal("Luna trasera", json.GetProperty("productName").GetString());
     }
@@ -119,7 +119,7 @@ public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Progra
         };
         var response = await _client.SendAsync(request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await _client.GetAsync("/products/2004")).StatusCode);
     }
 }

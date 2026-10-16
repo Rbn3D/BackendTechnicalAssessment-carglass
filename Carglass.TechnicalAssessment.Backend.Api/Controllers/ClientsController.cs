@@ -38,33 +38,33 @@ public class ClientsController : ControllerBase
     /// <summary>Crea un cliente.</summary>
     /// <remarks>El Id y el número de documento deben ser únicos. Si el tipo de documento es "nif", el número debe tener 8 dígitos y 1 letra.</remarks>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public IActionResult Create([FromBody] ClientDto dto)
     {
         _clientAppService.Create(dto);
-        return Ok();
+        return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
 
     /// <summary>Actualiza un cliente existente.</summary>
     [HttpPut]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public IActionResult Update([FromBody] ClientDto dto)
     {
         _clientAppService.Update(dto);
-        return Ok();
+        return NoContent();
     }
 
     /// <summary>Elimina un cliente.</summary>
     [HttpDelete]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public IActionResult Delete([FromBody] ClientDto dto)
     {
         _clientAppService.Delete(dto);
-        return Ok();
+        return NoContent();
     }
 }

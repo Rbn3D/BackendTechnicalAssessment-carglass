@@ -122,7 +122,7 @@ public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>
 
         var response = await _client.PutAsJsonAsync("/clients", updated);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
         var stored = await _client.GetFromJsonAsync<ClientDto>("/clients/400");
 
@@ -144,7 +144,7 @@ public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>
         };
         var response = await _client.SendAsync(request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
         var check = await _client.GetAsync("/clients/500");
         Assert.Equal(HttpStatusCode.NotFound, check.StatusCode);
