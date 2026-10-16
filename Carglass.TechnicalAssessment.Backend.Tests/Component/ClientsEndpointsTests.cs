@@ -67,6 +67,18 @@ public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>
     }
 
     [Fact]
+    public async Task Create_returns_201_with_location_header()
+    {
+        var response = await _client.PostAsJsonAsync("/clients", NewClient(2006, "11111111H"));
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal("/clients/2006", response.Headers.Location?.AbsolutePath);
+
+        var follow = await _client.GetAsync(response.Headers.Location);
+        Assert.Equal(HttpStatusCode.OK, follow.StatusCode);
+    }
+
+    [Fact]
     public async Task Create_duplicated_id_returns_409()
     {
         var dto = NewClient(id: 1, docNum: "33333333P");
@@ -108,6 +120,27 @@ public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>
 
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Contains("DocNum", problem!.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Update_nonexistent_returns_404()
+    {
+        var response = await _client.PutAsJsonAsync("/clients", NewClient(999999, "11111111H"));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Delete_nonexistent_returns_404()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Delete, "/clients")
+        {
+            Content = JsonContent.Create(NewClient(999999, "11111111H"))
+        };
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]

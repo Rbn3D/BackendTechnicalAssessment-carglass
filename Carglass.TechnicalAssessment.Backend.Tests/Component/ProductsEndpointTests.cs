@@ -43,6 +43,17 @@ public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Progra
     }
 
     [Fact]
+    public async Task GetAll_returns_seed_product()
+    {
+        var response = await _client.GetAsync("/products");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var products = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Contains(products.EnumerateArray(), p => p.GetProperty("id").GetInt32() == 1111111);
+    }
+
+    [Fact]
     public async Task Create_then_GetById_returns_created_product()
     {
         var response = await _client.PostAsJsonAsync("/products", NewProduct(2001));
@@ -52,6 +63,18 @@ public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Progra
         var json = await GetProductJson(2001);
         Assert.Equal("Cristal ventanilla delantera", json.GetProperty("productName").GetString());
         Assert.Equal(SoldAt, json.GetProperty("soldAt").GetString());
+    }
+
+    [Fact]
+    public async Task Create_returns_201_with_location_header()
+    {
+        var response = await _client.PostAsJsonAsync("/products", NewProduct(2006));
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal("/products/2006", response.Headers.Location?.AbsolutePath);
+
+        var follow = await _client.GetAsync(response.Headers.Location);
+        Assert.Equal(HttpStatusCode.OK, follow.StatusCode);
     }
 
     [Theory]
@@ -65,6 +88,22 @@ public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Progra
 
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Contains("ProductName", problem!.Errors.Keys);
+    }
+
+    [Theory]
+    [InlineData("09/01/2019 14:26:17")]
+    [InlineData("2019-13-01 14:26:17")] // mes 13
+    [InlineData("no-es-una-fecha")]
+    public async Task Create_with_invalid_sold_at_returns_400(string soldAt)
+    {
+        var product = new { id = 2005, productName = "Luna", productType = 25, numTerminal = 933933933, soldAt };
+
+        var response = await _client.PostAsJsonAsync("/products", product);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Contains("$.soldAt", problem!.Errors.Keys);
     }
 
     [Fact]
@@ -93,6 +132,27 @@ public class ProductsEndpointsTests : IClassFixture<WebApplicationFactory<Progra
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Update_nonexistent_returns_404()
+    {
+        var response = await _client.PutAsJsonAsync("/products", NewProduct(999999));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Delete_nonexistent_returns_404()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Delete, "/products")
+        {
+            Content = JsonContent.Create(NewProduct(999999))
+        };
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]

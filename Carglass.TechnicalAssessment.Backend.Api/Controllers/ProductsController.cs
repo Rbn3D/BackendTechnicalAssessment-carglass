@@ -20,14 +20,14 @@ public class ProductsController : ControllerBase
     /// <summary>Obtiene todos los productos.</summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetAll() => Ok(_productAppService.GetAll());
+    public ActionResult<IEnumerable<ProductDto>> GetAll() => Ok(_productAppService.GetAll());
 
     /// <summary>Obtiene un producto por su Id.</summary>
     /// <param name="id">Id del producto.</param>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public IActionResult GetById(int id) => Ok(_productAppService.GetById(id));
+    public ActionResult<ProductDto> GetById(int id) => Ok(_productAppService.GetById(id));
 
     /// <summary>Crea un producto.</summary>
     [HttpPost]
