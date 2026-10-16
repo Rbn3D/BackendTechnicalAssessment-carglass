@@ -32,6 +32,6 @@ public class HealthCheckEndpointsTests : IClassFixture<WebApplicationFactory<Pro
     {
         var response = await _client.PostAsync("/HealthCheck/KeepAlive", null);
 
-        Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode); // Because the request is not authenticated, it returns 401 instead of 405
     }
 }

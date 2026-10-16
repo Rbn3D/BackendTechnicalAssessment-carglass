@@ -11,9 +11,6 @@ public class ClientsEndpointTests : IClassFixture<ApiFactory>
         => _client = factory.CreateAuthenticatedClient();
     private readonly HttpClient _client;
 
-    public ClientsEndpointTests(WebApplicationFactory<Program> factory)
-        => _client = factory.CreateClient();
-
     [Fact]
     public async Task Create_then_GetById_returns_created_client()
     {
