@@ -69,7 +69,7 @@ public class ClientsEndpointTests : IClassFixture<WebApplicationFactory<Program>
     [Fact]
     public async Task Create_returns_201_with_location_header()
     {
-        var response = await _client.PostAsJsonAsync("/clients", NewClient(2006, "11111111H"));
+        var response = await _client.PostAsJsonAsync("/clients", NewClient(2006, "55555555K"));
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.Equal("/clients/2006", response.Headers.Location?.AbsolutePath);
